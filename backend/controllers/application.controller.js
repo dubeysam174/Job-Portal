@@ -2,6 +2,8 @@ import { Application } from "../models/application.model.js";
 import Job  from "../models/job.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { io, onlineUsers } from "../index.js"; // ← add this
+import Message from "../models/message.model.js";          // ← add this
+import Conversation from "../models/conversation.model.js";
 
 export const applyJob = async (req, res) => {
     try {
