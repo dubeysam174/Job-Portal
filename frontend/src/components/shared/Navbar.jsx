@@ -42,7 +42,7 @@ const Navbar = () => {
         toast.error(err.response.data.message);
     }
 };
-  };
+  
   return (
     <div className="sticky top-0 z-50 backdrop-blur-md bg-blend-darken  border-gray-200 ">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16">
