@@ -3,35 +3,39 @@ import authSlice from "./authSlice";
 import jobSlice from "./jobSlice";
 import {
     persistReducer,
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
+    persistStore,
+    FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import companySlice from "./companyslice"
 import applicationSlice from "./applicationSlice";
 import messageReducer from './messageSlice'
 
+if (typeof window !== 'undefined') {
+    const currentVersion = localStorage.getItem('persist_version');
+    if (currentVersion !== '2') {
+        localStorage.clear();
+        localStorage.setItem('persist_version', '2');
+    }
+}
+
 const persistConfig = {
     key: 'root',
-    version: 1,
-    storage: storage.default,
-     blacklist: ['message'] 
+    version: 2,
+    storage,
+    whitelist: ['auth'],
+    migrate: () => Promise.resolve(undefined),
 }
 
 const rootReducer = combineReducers({
-    auth:authSlice,
-    job:jobSlice,
-    company:companySlice,
-    application:applicationSlice,
+    auth: authSlice,
+    job: jobSlice,
+    company: companySlice,
+    application: applicationSlice,
     message: messageReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
-
 
 const store = configureStore({
     reducer: persistedReducer,
@@ -43,6 +47,5 @@ const store = configureStore({
         }),
 });
 
-
-
+export const persistor = persistStore(store);
 export default store;
