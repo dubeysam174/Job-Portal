@@ -17,8 +17,6 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 
-
-
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();

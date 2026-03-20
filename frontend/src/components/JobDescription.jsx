@@ -14,7 +14,6 @@ const JobDescription = () => {
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
 
-  // ✅ FIX 1: Always start with false, let useEffect set the real value
   const [isApplied, setIsApplied] = useState(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
 
@@ -74,7 +73,7 @@ const JobDescription = () => {
         });
         if (res.data.success) {
           dispatch(setSingleJob(res.data.job));
-          // ✅ FIX 2: Use .toString() for correct comparison after populate
+        
           setIsApplied(
             res.data.job.applications.some(
               (application) =>

@@ -12,13 +12,7 @@ import applicationSlice from "./applicationSlice";
 import messageReducer from './messageSlice'
 
 // ✅ force clear old corrupted storage on version change
-if (typeof window !== 'undefined') {
-    const currentVersion = localStorage.getItem('persist_version');
-    if (currentVersion !== '2') {
-        localStorage.clear();
-        localStorage.setItem('persist_version', '2');
-    }
-}
+
 
 const persistConfig = {
     key: 'root',
