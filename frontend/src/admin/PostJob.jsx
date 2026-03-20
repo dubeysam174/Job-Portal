@@ -203,7 +203,7 @@ const PostJob = () => {
             </label>
             <input
               type="text"
-              name="exprienceLevel"
+              name="experienceLevel"
               value={input.experienceLevel}
               onChange={changeHandler}
               placeholder="2 Years"
