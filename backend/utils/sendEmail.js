@@ -1,22 +1,11 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,          // ✅ use 587 instead of default 465
-    secure: false,      // ✅ false for port 587 (uses STARTTLS)
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD
-    },
-    tls: {
-        rejectUnauthorized: false  // ✅ helps on some hosting platforms
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async ({ to, subject, html }) => {
     try {
-        await transporter.sendMail({
-            from: `"JobX" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: "JobX <onboarding@resend.dev>",
             to,
             subject,
             html
