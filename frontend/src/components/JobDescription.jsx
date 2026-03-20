@@ -50,7 +50,7 @@ const JobDescription = () => {
       if (!employerId) return toast.error("Employer not found");
 
       const res = await axios.post(
-        "https://jobx-6vou.onrender.com/api/v1/conversation",
+        "/api/v1/conversation",
         { receiverId: employerId },
         { withCredentials: true },
       );

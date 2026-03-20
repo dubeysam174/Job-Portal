@@ -26,7 +26,7 @@ export const SocketProvider = ({ children }) => {
     // ✅ Don't recreate if already connected with same user
     if (socket?.connected) return;
 
-    const s = io("https://jobx-ohzk.onrender.com", {
+    const s = io("", {
       auth: { userId: user._id },
       withCredentials: true,
       transports: ["websocket"],
