@@ -157,7 +157,7 @@ const JobDescription = () => {
               {canMessage && (
                 <Button
                   onClick={startChat}
-                  className="rounded-lg px-6 py-2 text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600"
+                  className="rounded-lg px-6 py-2 text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 cursor-pointer"
                 >
                   Message Employer
                 </Button>
@@ -167,8 +167,8 @@ const JobDescription = () => {
                 disabled={isApplied}
                 className={`rounded-lg px-6 py-2 text-white ${
                   isApplied
-                    ? "bg-gray-500 cursor-not-allowed dark:bg-gray-600"
-                    : "bg-[#7209b7] hover:bg-[#5f32ad] dark:bg-purple-500 dark:hover:bg-purple-600"
+                    ? "bg-gray-500 cursor-not-allowed dark:bg-gray-600 "
+                    : "bg-[#7209b7] hover:bg-[#5f32ad] dark:bg-purple-500 dark:hover:bg-purple-600 cursor-pointer"
                 }`}
               >
                 {isApplied ? "Already Applied" : "Apply Now"}

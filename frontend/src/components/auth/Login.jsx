@@ -115,35 +115,42 @@ shadow-[0_0_30px_rgba(168,85,247,0.2)]"
                 value={input.password}
                 name="password"
                 onChange={changeEventHandler}
-                className="mt-2"
+                className="mt-2 "
               />
             </div>
 
             {/* Role */}
-            <RadioGroup className="flex gap-6 my-4">
-              <div className="flex items-center space-x-2">
-                <Input
+          <div className="flex gap-6 my-4">
+              <label
+                className="flex items-center gap-2 cursor-pointer 
+px-3 py-2 rounded-lg border 
+hover:bg-purple-50 dark:hover:bg-gray-800"
+              >
+                <input
                   type="radio"
                   name="role"
                   value="student"
                   checked={input.role === "student"}
                   onChange={changeEventHandler}
                 />
-                <Label>Student</Label>
-              </div>
+                Student
+              </label>
 
-              <div className="flex items-center space-x-2">
-                <Input
+              <label
+                className="flex items-center gap-2 cursor-pointer 
+px-3 py-2 rounded-lg border 
+hover:bg-purple-50 dark:hover:bg-gray-800"
+              >
+                <input
                   type="radio"
                   name="role"
                   value="recruiter"
                   checked={input.role === "recruiter"}
                   onChange={changeEventHandler}
                 />
-                <Label>Recruiter</Label>
-              </div>
-            </RadioGroup>
-
+                Recruiter
+              </label>
+            </div>
             {/* Button */}
             {loading ? (
               <Button className="w-full">
@@ -155,13 +162,13 @@ shadow-[0_0_30px_rgba(168,85,247,0.2)]"
                 type="submit"
                 className="w-full bg-gradient-to-r from-purple-900 to-purple-800 
                 text-white rounded-xl py-2 
-                 hover:scale-105 transition duration-300 shadow-lg"
+                 hover:scale-105 transition duration-300 shadow-lg cursor-pointer"
               >
                 Login
               </Button>
             )}
 
-            <p className="text-sm text-center mt-4">
+            <p className="text-sm text-center mt-4 cursor-pointer">
               Don't have an account?{" "}
               <Link to="/signup" className="text-purple-600 font-medium">
                 Signup

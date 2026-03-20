@@ -156,14 +156,14 @@ const Navbar = () => {
             )}
           </ul>
           {!user ? (
-            <div className="flex-items-center gap-12">
+            <div className="flex-items-center gap-12 cursor-pointer">
               <Link to="/login">
-                <button className="px-4 py-2 text-gray-700 font-medium rounded-md hover:text-purple-600 transition duration-200 dark:text-gray-300">
+                <button className="px-4 py-2 text-gray-700 font-medium rounded-md hover:text-purple-600 transition duration-200 dark:text-gray-300 cursor-pointer">
                   Login
                 </button>
               </Link>
               <Link to="/signup">
-                <button className="px-5 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 transition duration-200 shadow-sm">
+                <button className="px-5 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 transition duration-200 shadow-sm cursor-pointer">
                   Signup
                 </button>
               </Link>

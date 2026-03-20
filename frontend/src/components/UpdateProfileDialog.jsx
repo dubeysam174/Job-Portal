@@ -80,7 +80,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
   <DialogContent
-    className="w-[95%] sm:max-w-[500px] max-h-[90vh] overflow-y-auto 
+    className="w-[95%] sm:max-w-[500px] max-h-[90vh] overflow-y-hidden
                rounded-2xl p-6 
                bg-white dark:bg-gray-900 
                border dark:border-gray-700"

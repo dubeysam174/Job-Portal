@@ -92,7 +92,7 @@ const Job = ({ job, onSave, isSaved }) => {
       </div>
 
       
-      <div className="flex items-center gap-4 mt-4">
+      <div className="flex items-center gap-4 mt-4 cursor-pointer">
         <Button
           variant="outline"
           onClick={() => job?._id && navigate(`/description/${job._id}`)}
