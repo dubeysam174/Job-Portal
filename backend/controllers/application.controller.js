@@ -101,7 +101,7 @@ export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
         const applicationId = req.params.id;
-
+ console.log("1. updateStatus called", { status, applicationId }); // ← add
         if (!status) {
             return res.status(400).json({
                 message: 'status is required',
@@ -172,7 +172,7 @@ export const updateStatus = async (req, res) => {
 
             await sendEmail({ to: applicantEmail, subject, html });
         }
-
+ console.log("1. updateStatus called", { status, applicationId }); // ← add
         return res.status(200).json({
             message: "Status updated successfully.",
             success: true
