@@ -11,20 +11,11 @@ import companySlice from "./companyslice"
 import applicationSlice from "./applicationSlice";
 import messageReducer from './messageSlice'
 
-if (typeof window !== 'undefined') {
-    const currentVersion = localStorage.getItem('persist_version');
-    if (currentVersion !== '2') {
-        localStorage.clear();
-        localStorage.setItem('persist_version', '2');
-    }
-}
-
 const persistConfig = {
     key: 'root',
     version: 2,
     storage,
     whitelist: ['auth'],
-    migrate: () => Promise.resolve(undefined),
 }
 
 const rootReducer = combineReducers({
