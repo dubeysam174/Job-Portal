@@ -229,10 +229,10 @@ const JobDescription = () => {
           </p>
           <p>
             <b>Experience:</b>{" "}
-            {singleJob?.exprienceLevel === 0
+            {singleJob?.experienceLevel === 0
               ? "Fresher"
-              : `${singleJob?.exprienceLevel ?? 0} ${
-                  singleJob?.exprienceLevel === 1 ? "year" : "years"
+              : `${singleJob?.experienceLevel ?? 0} ${
+                  singleJob?.experienceLevel === 1 ? "year" : "years"
                 }`}
           </p>
           <p>

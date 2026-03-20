@@ -26,6 +26,7 @@ const onlineUsers = new Map();
 
 
 const allowedOrigins = [
+  "http://localhost:8000", 
   "http://localhost:5173",
   "http://localhost:5174",
   "https://jobx-6vou.onrender.com"
