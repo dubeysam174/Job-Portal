@@ -16,9 +16,6 @@ import {
   BriefcaseIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-// add this import at the top
-import { persistor } from "@/redux/Store";
-import { setLoading } from "@/redux/authSlice";
 
 
 
@@ -26,24 +23,21 @@ const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
- // ✅ Correct
   const logoutHandler = async (e) => {
     try {
-        const res = await axios.get(`${USER_API_END_POINT}/logout`, {
-            withCredentials: true,
-        });
-        if (res.data.success) {
-            dispatch(setUser(null));
-            dispatch(setLoading(false));
-            await persistor.purge();
-            navigate("/");
-            toast.success(res.data.message);
-        }
+      const res = await axios.get(`${USER_API_END_POINT}/logout`, {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        dispatch(setUser(null));
+        navigate("/");
+        toast.success(res.data.message);
+      }
     } catch (err) {
-        console.log(err);
-        toast.error(err.response.data.message);
+      console.log(err);
+      toast.error(err.response.data.message);
     }
-  };  // ✅ only one closing
+  };
   return (
     <div className="sticky top-0 z-50 backdrop-blur-md bg-blend-darken  border-gray-200 ">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16">

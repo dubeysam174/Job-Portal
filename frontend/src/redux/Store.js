@@ -3,7 +3,7 @@ import authSlice from "./authSlice";
 import jobSlice from "./jobSlice";
 import {
     persistReducer,
-        
+    persistStore,        // ✅ added
     FLUSH,
     REHYDRATE,
     PAUSE,
@@ -15,7 +15,6 @@ import storage from 'redux-persist/lib/storage'
 import companySlice from "./companyslice"
 import applicationSlice from "./applicationSlice";
 import messageReducer from './messageSlice'
-import store, { persistor } from "./redux/Store.js";
 
 const persistConfig = {
     key: 'root',
@@ -44,6 +43,5 @@ const store = configureStore({
         }),
 });
 
-export const persistor = persistStore(store); // ✅ add this line
-
+export const persistor = persistStore(store);  // ✅ added
 export default store;
