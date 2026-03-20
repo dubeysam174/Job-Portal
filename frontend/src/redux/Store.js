@@ -3,24 +3,29 @@ import authSlice from "./authSlice";
 import jobSlice from "./jobSlice";
 import {
     persistReducer,
-    persistStore,        // ✅ added
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
+    persistStore,
+    FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER,
 } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import companySlice from "./companyslice"
 import applicationSlice from "./applicationSlice";
 import messageReducer from './messageSlice'
 
+// ✅ force clear old corrupted storage on version change
+if (typeof window !== 'undefined') {
+    const currentVersion = localStorage.getItem('persist_version');
+    if (currentVersion !== '2') {
+        localStorage.clear();
+        localStorage.setItem('persist_version', '2');
+    }
+}
+
 const persistConfig = {
     key: 'root',
-    version: 1,
-    storage,                 // ✅ fixed: was storage.default
-    whitelist: ['auth'],     // ✅ fixed: was blacklist:['message']
+    version: 2,
+    storage,
+    whitelist: ['auth'],
+    migrate: () => Promise.resolve(undefined),
 }
 
 const rootReducer = combineReducers({
@@ -43,5 +48,5 @@ const store = configureStore({
         }),
 });
 
-export const persistor = persistStore(store);  // ✅ added
+export const persistor = persistStore(store);
 export default store;
