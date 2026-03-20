@@ -5,22 +5,23 @@ export const sendEmail = async ({ to, subject, html }) => {
         console.log("📧 Attempting to send email...");
         console.log("📧 FROM:", process.env.EMAIL_USER);
         console.log("📧 TO:", to);
-        console.log("📧 SUBJECT:", subject);
         console.log("📧 APP PASSWORD SET:", !!process.env.EMAIL_PASS);
         console.log("📧 APP PASSWORD LENGTH:", process.env.EMAIL_PASS?.length);
 
-        // ← create transporter INSIDE the function
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
+            port: 587,        // ← try 587
+            secure: false,    // ← false for 587
+            requireTLS: true, // ← force TLS upgrade
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
+            },
+            tls: {
+                rejectUnauthorized: false // ← bypass certificate issues
             }
         });
 
-        // ← verify connection first
         console.log("📧 Verifying SMTP connection...");
         await transporter.verify();
         console.log("📧 SMTP connection verified ✅");
@@ -37,6 +38,5 @@ export const sendEmail = async ({ to, subject, html }) => {
         console.log("❌ Email failed!");
         console.log("❌ Error message:", error.message);
         console.log("❌ Error code:", error.code);
-        console.log("❌ Full error:", error);
     }
 };
