@@ -14,8 +14,8 @@ export const register = async (req, res) => {
         success: false,
       });
     }
-    const file=req.file;
-    const fileUri= getDataUri(file);
+    const file = req.file;
+    const fileUri = getDataUri(file);
     const cloudResponse = await cloudinary.uploader.upload(fileUri.content)
     const user = await User.findOne({ email });
     if (user) {
@@ -45,11 +45,10 @@ export const register = async (req, res) => {
   }
 };
 
-//for login.
 export const login = async (req, res) => {
   try {
-    const {  email, password, role } = req.body;
-    if ( !email || !password || !role) {
+    const { email, password, role } = req.body;
+    if (!email || !password || !role) {
       return res.status(400).json({
         message: "Something is missing",
         success: false,
@@ -65,11 +64,10 @@ export const login = async (req, res) => {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({
-        message: "Incorect email or password",
+        message: "Incorrect email or password",
         success: false,
       });
     }
-    // check role is correct or not.
     if (role !== user.role) {
       return res.status(400).json({
         message: "Account doesn't exist with current role.",
@@ -99,20 +97,25 @@ export const login = async (req, res) => {
         maxAge: 1 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: "strict",
+        secure: true, // ✅ fixed
       })
       .json({
         message: `welcome Back ${user.fullname}`,
         user,
         success: true,
       });
-  } catch (err) {console.log(err)}
+  } catch (err) {
+    console.log(err);
+  }
 };
-
-//for logout.
 
 export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+    return res.status(200).cookie("token", "", {
+      maxAge: 0,
+      secure: true,       // ✅ fixed
+      sameSite: "strict", // ✅ fixed
+    }).json({
       message: "logged out successfully.",
       success: true,
     });
@@ -120,8 +123,6 @@ export const logout = async (req, res) => {
     console.log(err);
   }
 };
-
-// update profile.
 
 export const updateProfile = async (req, res) => {
   try {
@@ -138,22 +139,17 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Update basic fields
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (bio) user.profile.bio = bio;
 
     if (skills) {
-      user.profile.skills = skills.split(",").map((skill) =>
-        skill.trim()
-      );
+      user.profile.skills = skills.split(",").map((skill) => skill.trim());
     }
 
-    // ✅ ONLY upload if file exists
     if (file) {
       const fileUri = getDataUri(file);
-
       const cloudResponse = await cloudinary.uploader.upload(
         fileUri.content,
         {
@@ -163,7 +159,6 @@ export const updateProfile = async (req, res) => {
           format: "pdf",
         }
       );
-
       user.profile.resume = cloudResponse.secure_url;
       user.profile.resumeOriginalName = file.originalname;
     }
