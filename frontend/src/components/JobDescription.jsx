@@ -13,13 +13,10 @@ import { setCurrentConversation } from "@/redux/messageSlice";
 const JobDescription = () => {
   const { singleJob } = useSelector((store) => store.job);
   const { user } = useSelector((store) => store.auth);
- 
-  const isIntiallyApplied =
-    singleJob?.applications?.some(
-      (application) => application.applicant === user?._id,
-    ) || false;
-  const [isApplied, setIsApplied] = useState(isIntiallyApplied);
-  const [applicationStatus, setApplicationStatus] = useState(null); 
+
+  // ✅ FIX 1: Always start with false, let useEffect set the real value
+  const [isApplied, setIsApplied] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
   const params = useParams();
   const jobId = params.id;
@@ -34,7 +31,7 @@ const JobDescription = () => {
       );
       if (res.data.success) {
         setIsApplied(true);
-        setApplicationStatus("pending"); // ← add this
+        setApplicationStatus("pending");
         const updatedSingleJob = {
           ...singleJob,
           applications: [...singleJob.applications, { applicant: user?._id }],
@@ -44,10 +41,9 @@ const JobDescription = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
- 
 
   const startChat = async () => {
     try {
@@ -55,7 +51,7 @@ const JobDescription = () => {
       if (!employerId) return toast.error("Employer not found");
 
       const res = await axios.post(
-        "http://localhost:8000/api/v1/conversation",
+        "https://jobx-6vou.onrender.com/api/v1/conversation",
         { receiverId: employerId },
         { withCredentials: true },
       );
@@ -78,10 +74,12 @@ const JobDescription = () => {
         });
         if (res.data.success) {
           dispatch(setSingleJob(res.data.job));
+          // ✅ FIX 2: Use .toString() for correct comparison after populate
           setIsApplied(
             res.data.job.applications.some(
-              (application) => application.applicant === user?._id,
-            ),
+              (application) =>
+                application.applicant?.toString() === user?._id?.toString()
+            )
           );
         }
       } catch (error) {
@@ -90,7 +88,6 @@ const JobDescription = () => {
     };
 
     const fetchApplicationStatus = async () => {
-     
       try {
         const res = await axios.get(
           `${APPLICATION_API_END_POINT}/mystatus/${jobId}`,
@@ -105,27 +102,29 @@ const JobDescription = () => {
     };
 
     fetchSingleJob();
-    fetchApplicationStatus(); 
+    fetchApplicationStatus();
   }, [jobId, dispatch, user?._id]);
 
   const canMessage =
-    applicationStatus === "accepted" || applicationStatus === "rejected"; // ← add this
- if (!singleJob) {
+    applicationStatus === "accepted" || applicationStatus === "rejected";
+
+  if (!singleJob) {
     return (
       <div className="text-center mt-10 text-lg font-semibold">
         Loading job details...
       </div>
     );
   }
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen transition duration-300">
       <Navbar />
 
       <div
         className="max-w-5xl mx-auto my-10 
-    bg-white dark:bg-gray-800 
-    shadow-md dark:shadow-lg 
-    rounded-lg p-8 transition duration-300"
+        bg-white dark:bg-gray-800 
+        shadow-md dark:shadow-lg 
+        rounded-lg p-8 transition duration-300"
       >
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -163,10 +162,10 @@ const JobDescription = () => {
             {applicationStatus && (
               <span
                 className={`text-xs font-semibold px-3 py-1 rounded-full
-            ${applicationStatus === "accepted" ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" : ""}
-            ${applicationStatus === "rejected" ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300" : ""}
-            ${applicationStatus === "pending" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300" : ""}
-          `}
+                  ${applicationStatus === "accepted" ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" : ""}
+                  ${applicationStatus === "rejected" ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300" : ""}
+                  ${applicationStatus === "pending" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300" : ""}
+                `}
               >
                 {applicationStatus === "accepted" && "Application Accepted"}
                 {applicationStatus === "rejected" && "Application Rejected"}
@@ -179,8 +178,8 @@ const JobDescription = () => {
                 <Button
                   onClick={startChat}
                   className="rounded-lg px-6 py-2 text-white 
-              bg-purple-600 hover:bg-purple-700 
-              dark:bg-purple-500 dark:hover:bg-purple-600"
+                    bg-purple-600 hover:bg-purple-700 
+                    dark:bg-purple-500 dark:hover:bg-purple-600"
                 >
                   Message Employer
                 </Button>
@@ -228,7 +227,7 @@ const JobDescription = () => {
             </span>{" "}
             {singleJob?.description}
           </p>
-         <p>
+          <p>
             <b>Experience:</b>{" "}
             {singleJob?.exprienceLevel === 0
               ? "Fresher"

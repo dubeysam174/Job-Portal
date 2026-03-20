@@ -13,30 +13,37 @@ export const SocketProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
 
   useEffect(() => {
+    // If no user, clean up any existing socket
     if (!user?._id) {
       if (socket) {
-        socket.close();
+        socket.disconnect();
         setSocket(null);
         setOnlineUsers([]);
       }
       return;
     }
 
+    // ✅ Don't recreate if already connected with same user
+    if (socket?.connected) return;
+
     const s = io("https://jobx-6vou.onrender.com", {
-  auth: { userId: user._id },   // ← use auth instead of query
-  withCredentials: true,
-  transports: ["websocket"]
-});
+      auth: { userId: user._id },
+      withCredentials: true,
+      transports: ["websocket"],
+      reconnectionAttempts: 5,   // ✅ stop after 5 tries
+      reconnectionDelay: 2000,   // ✅ wait 2s between retries
+    });
+
     s.on("connect", () => {
-    
+      console.log("✅ Socket connected:", s.id);
     });
 
     s.on("online_users", (users) => {
       setOnlineUsers(users);
     });
 
-    s.on("disconnect", () => {
-      
+    s.on("disconnect", (reason) => {
+      console.log("❌ Socket disconnected:", reason);
     });
 
     s.on("connect_error", (err) => {
@@ -45,14 +52,11 @@ export const SocketProvider = ({ children }) => {
 
     setSocket(s);
 
+    // ✅ Cleanup on unmount or user change
     return () => {
-    if (s.connected) {
-      s.disconnect();  
-    } else {
-      s.close();        
-    }
-  };
-  }, [user?._id]);
+      s.disconnect();
+    };
+  }, [user?._id]); // only re-run when user ID changes
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
