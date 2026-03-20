@@ -100,7 +100,7 @@ export const getApplicants = async (req,res) => {
     }
 }
 
-const sendAutoMessage = async (recruiterId, applicantId, text, io, onlineUsers) => {
+const sendAutoMessage = async (recruiterId, applicantId, text) => {
     let conversation = await Conversation.findOne({
         participants: { $all: [recruiterId, applicantId] }
     });
@@ -121,9 +121,9 @@ const sendAutoMessage = async (recruiterId, applicantId, text, io, onlineUsers) 
         lastMessage: message._id
     });
 
-    const applicantSocketId = onlineUsers.get(applicantId.toString());
+    const applicantSocketId = onlineUsers.get(applicantId.toString()); // ← uses imported onlineUsers
     if (applicantSocketId) {
-        io.to(applicantSocketId).emit("new_message", {
+        io.to(applicantSocketId).emit("new_message", {             // ← uses imported io
             conversationId: conversation._id,
             text,
             sender: recruiterId,
@@ -134,7 +134,6 @@ const sendAutoMessage = async (recruiterId, applicantId, text, io, onlineUsers) 
         console.log("💬 Auto message saved, applicant offline");
     }
 };
-
 export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
