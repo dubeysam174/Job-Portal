@@ -1,6 +1,7 @@
 import { Application } from "../models/application.model.js";
 import Job  from "../models/job.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { io, onlineUsers } from "../index.js"; // ← add this
 
 export const applyJob = async (req, res) => {
     try {
@@ -101,7 +102,8 @@ export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
         const applicationId = req.params.id;
- console.log("1. updateStatus called", { status, applicationId }); // ← add
+        console.log("1. updateStatus called", { status, applicationId });
+
         if (!status) {
             return res.status(400).json({
                 message: 'status is required',
@@ -109,7 +111,6 @@ export const updateStatus = async (req, res) => {
             });
         }
 
-        // ← populate applicant and job to get email and job title
         const application = await Application.findById(applicationId)
             .populate('applicant', 'fullname email')
             .populate({
@@ -131,7 +132,6 @@ export const updateStatus = async (req, res) => {
         application.status = status.toLowerCase();
         await application.save();
 
-        //  send email if accepted or rejected
         const isAccepted = status.toLowerCase() === 'accepted';
         const isRejected = status.toLowerCase() === 'rejected';
 
@@ -140,6 +140,19 @@ export const updateStatus = async (req, res) => {
             const applicantEmail = application.applicant.email;
             const jobTitle = application.job.title;
             const companyName = application.job.company?.name || "the company";
+
+            // 🔔 Real-time socket notification
+            const applicantSocketId = onlineUsers.get(application.applicant._id.toString());
+            if (applicantSocketId) {
+                io.to(applicantSocketId).emit("application_status", {
+                    jobTitle,
+                    companyName,
+                    status: status.toLowerCase()
+                });
+                console.log("🔔 Real-time notification sent to applicant");
+            } else {
+                console.log("🔔 Applicant offline, skipping real-time notification");
+            }
 
             const subject = isAccepted
                 ? `Congratulations! Your application for ${jobTitle} has been accepted`
@@ -151,7 +164,7 @@ export const updateStatus = async (req, res) => {
                         <h2 style="color: #16a34a;">Congratulations, ${applicantName}! 🎉</h2>
                         <p>We are excited to inform you that your application for <strong>${jobTitle}</strong> at <strong>${companyName}</strong> has been:</p>
                         <p style="font-size: 20px; font-weight: bold; color: #16a34a; text-align: center; padding: 10px; background: #f0fdf4; border-radius: 6px;">ACCEPTED ✓</p>
-                        <p>The recruiter will be in touch with you shortly with the next steps.</p>
+                        <p>The recruiter will be in touch with you shortly with next steps.</p>
                         <p>You can also message the employer directly through <strong>JobX</strong>.</p>
                         <br/>
                         <p style="color: #6b7280; font-size: 14px;">Best regards,<br/>Team JobX</p>
@@ -164,15 +177,17 @@ export const updateStatus = async (req, res) => {
                         <p>Thank you for applying for <strong>${jobTitle}</strong> at <strong>${companyName}</strong>.</p>
                         <p style="font-size: 20px; font-weight: bold; color: #dc2626; text-align: center; padding: 10px; background: #fef2f2; border-radius: 6px;">NOT SELECTED</p>
                         <p>After careful consideration, we regret to inform you that your application has not been selected at this time.</p>
-                        <p>Don't be discouraged — keep applying for other opportunities on <strong>JobX</strong>!</p>
+                        <p>Don't be discouraged — keep applying on <strong>JobX</strong>!</p>
                         <br/>
                         <p style="color: #6b7280; font-size: 14px;">Best regards,<br/>Team JobX</p>
                     </div>
                 `;
 
+            // ✅ no stray + sign
             await sendEmail({ to: applicantEmail, subject, html });
         }
- console.log("1. updateStatus called", { status, applicationId }); // ← add
+
+        console.log("2. updateStatus completed");
         return res.status(200).json({
             message: "Status updated successfully.",
             success: true
