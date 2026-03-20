@@ -29,7 +29,7 @@ const allowedOrigins = [
   "http://localhost:8000", 
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://jobx-6vou.onrender.com"
+  "https://jobx-ohzk.onrender.com"
 ];
 
 const io = new Server(httpServer, {

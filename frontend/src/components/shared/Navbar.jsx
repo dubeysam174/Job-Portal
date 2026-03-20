@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { Toaster, toast } from "sonner";
-import { setUser } from "@/redux/authSlice";
+
 import DarkModeToggle from "@/theme/DarkModeToggle";
 import { MoonStar } from "lucide-react";
 import {
@@ -16,6 +16,8 @@ import {
   BriefcaseIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+import { setUser, setLoading } from "@/redux/authSlice";
+import { persistor } from "@/redux/Store";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -23,19 +25,22 @@ const Navbar = () => {
   const navigate = useNavigate();
   const logoutHandler = async (e) => {
     try {
-      const res = await axios.get(`${USER_API_END_POINT}/logout`, {
-        withCredentials: true,
-      });
-      if (res.data.success) {
-        dispatch(setUser(null));
-        navigate("/");
-        toast.success(res.data.message);
-      }
+        const res = await axios.get(`${USER_API_END_POINT}/logout`, {
+            withCredentials: true,
+        });
+        if (res.data.success) {
+            dispatch(setUser(null));
+            dispatch(setLoading(false));
+            await persistor.purge();
+            navigate("/");
+            toast.success(res.data.message);
+        }
     } catch (err) {
-      console.log(err);
-      toast.error(err.response.data.message);
+        console.log(err);
+        toast.error(err.response.data.message);
     }
-  };
+};
+  
   return (
     <div className="sticky top-0 z-50 backdrop-blur-md bg-blend-darken  border-gray-200 ">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16">

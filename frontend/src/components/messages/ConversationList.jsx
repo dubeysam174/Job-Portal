@@ -19,7 +19,7 @@ export default function ConversationList() {
   useEffect(() => {
     dispatch(setConversations([]));
 
-    axios.get("https://jobx-6vou.onrender.com/api/v1/conversation", {
+    axios.get("https://jobx-ohzk.onrender.com/api/v1/conversation", {
       withCredentials: true
     }).then((res) => {
     
@@ -36,13 +36,13 @@ export default function ConversationList() {
     dispatch(clearUnread(conversation._id));
 
     const res = await axios.get(
-      `https://jobx-6vou.onrender.com/api/v1/message/${conversation._id}`,
+      `https://jobx-ohzk.onrender.com/api/v1/message/${conversation._id}`,
       { withCredentials: true }
     );
     if (res.data.success) dispatch(setMessages(res.data.messages));
 
     await axios.put(
-      `https://jobx-6vou.onrender.com/api/v1/message/seen/${conversation._id}`,
+      `https://jobx-ohzk.onrender.com/api/v1/message/seen/${conversation._id}`,
       {},
       { withCredentials: true }
     );
