@@ -1,18 +1,32 @@
-import { Resend } from 'resend';
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 
 export const sendEmail = async ({ to, subject, html }) => {
     try {
-        const result = await resend.emails.send({
-            from: "JobX <onboarding@resend.dev>",
+        console.log("📧 Attempting to send email...");
+        console.log("📧 FROM:", process.env.EMAIL_USER);
+        console.log("📧 TO:", to);
+        console.log("📧 SUBJECT:", subject);
+        console.log("📧 APP PASSWORD SET:", !!process.env.EMAIL_PASS);
+
+        const result = await transporter.sendMail({
+            from: `"JobX" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html
         });
-        console.log("Email sent:", result); // ← log full result
+
+        console.log("✅ Email sent successfully! Message ID:", result.messageId);
     } catch (error) {
-        console.log("Email error:", error); // ← check full error object
-        throw error; // ← bubble up so you can catch it
+        console.log("❌ Email failed!");
+        console.log("❌ Error message:", error.message);
+        console.log("❌ Full error:", error);
     }
 };
