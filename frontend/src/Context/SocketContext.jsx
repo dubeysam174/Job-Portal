@@ -42,20 +42,8 @@ export const SocketProvider = ({ children }) => {
       setOnlineUsers(users);
     });
 
-    s.on("application_status", ({ jobTitle, companyName, status }) => {
-      console.log("🔔 Application status received:", { jobTitle, status });
-
-      if (status === "accepted") {
-        toast.success(`🎉 Congratulations! Your application for ${jobTitle} at ${companyName} has been Accepted!`, {
-          duration: 6000,  // show for 6 seconds
-        });
-      } else if (status === "rejected") {
-        toast.error(`😔 Your application for ${jobTitle} at ${companyName} was not selected.`, {
-          duration: 6000,
-        });
-      }
-    });
     
+
     s.on("disconnect", (reason) => {
       console.log("❌ Socket disconnected:", reason);
     });

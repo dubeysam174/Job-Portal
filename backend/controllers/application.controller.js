@@ -98,6 +98,41 @@ export const getApplicants = async (req,res) => {
     }
 }
 
+const sendAutoMessage = async (recruiterId, applicantId, text, io, onlineUsers) => {
+    let conversation = await Conversation.findOne({
+        participants: { $all: [recruiterId, applicantId] }
+    });
+
+    if (!conversation) {
+        conversation = await Conversation.create({
+            participants: [recruiterId, applicantId]
+        });
+    }
+
+    const message = await Message.create({
+        conversationId: conversation._id,
+        sender: recruiterId,
+        text
+    });
+
+    await Conversation.findByIdAndUpdate(conversation._id, {
+        lastMessage: message._id
+    });
+
+    const applicantSocketId = onlineUsers.get(applicantId.toString());
+    if (applicantSocketId) {
+        io.to(applicantSocketId).emit("new_message", {
+            conversationId: conversation._id,
+            text,
+            sender: recruiterId,
+            createdAt: new Date()
+        });
+        console.log("💬 Auto message sent in real-time");
+    } else {
+        console.log("💬 Auto message saved, applicant offline");
+    }
+};
+
 export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -105,10 +140,7 @@ export const updateStatus = async (req, res) => {
         console.log("1. updateStatus called", { status, applicationId });
 
         if (!status) {
-            return res.status(400).json({
-                message: 'status is required',
-                success: false
-            });
+            return res.status(400).json({ message: 'status is required', success: false });
         }
 
         const application = await Application.findById(applicationId)
@@ -116,17 +148,11 @@ export const updateStatus = async (req, res) => {
             .populate({
                 path: 'job',
                 select: 'title',
-                populate: {
-                    path: 'company',
-                    select: 'name'
-                }
+                populate: { path: 'company', select: 'name' }
             });
 
         if (!application) {
-            return res.status(404).json({
-                message: "Application not found.",
-                success: false
-            });
+            return res.status(404).json({ message: "Application not found.", success: false });
         }
 
         application.status = status.toLowerCase();
@@ -136,68 +162,58 @@ export const updateStatus = async (req, res) => {
         const isRejected = status.toLowerCase() === 'rejected';
 
         if (isAccepted || isRejected) {
+            const applicantId = application.applicant._id;
+            const recruiterId = req.id; // ← logged in recruiter
             const applicantName = application.applicant.fullname;
             const applicantEmail = application.applicant.email;
             const jobTitle = application.job.title;
             const companyName = application.job.company?.name || "the company";
 
-            // 🔔 Real-time socket notification
-            const applicantSocketId = onlineUsers.get(application.applicant._id.toString());
-            if (applicantSocketId) {
-                io.to(applicantSocketId).emit("application_status", {
-                    jobTitle,
-                    companyName,
-                    status: status.toLowerCase()
-                });
-                console.log("🔔 Real-time notification sent to applicant");
-            } else {
-                console.log("🔔 Applicant offline, skipping real-time notification");
-            }
+            // ✅ Auto message in conversation
+            const autoMessageText = isAccepted
+                ? `🎉 Congratulations ${applicantName}! Your application for ${jobTitle} at ${companyName} has been Accepted! We will be in touch shortly.`
+                : `😔 Sorry ${applicantName}, after careful consideration your application for ${jobTitle} at ${companyName} has not been selected. Don't give up!`;
 
+            await sendAutoMessage(recruiterId, applicantId, autoMessageText); // ← add this
+
+            
+
+            // 📧 Email
             const subject = isAccepted
                 ? `Congratulations! Your application for ${jobTitle} has been accepted`
                 : `Update on your application for ${jobTitle}`;
 
             const html = isAccepted
-                ? `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                ? `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
                         <h2 style="color: #16a34a;">Congratulations, ${applicantName}! 🎉</h2>
-                        <p>We are excited to inform you that your application for <strong>${jobTitle}</strong> at <strong>${companyName}</strong> has been:</p>
+                        <p>Your application for <strong>${jobTitle}</strong> at <strong>${companyName}</strong> has been:</p>
                         <p style="font-size: 20px; font-weight: bold; color: #16a34a; text-align: center; padding: 10px; background: #f0fdf4; border-radius: 6px;">ACCEPTED ✓</p>
-                        <p>The recruiter will be in touch with you shortly with next steps.</p>
-                        <p>You can also message the employer directly through <strong>JobX</strong>.</p>
+                        <p>The recruiter will be in touch with you shortly.</p>
                         <br/>
                         <p style="color: #6b7280; font-size: 14px;">Best regards,<br/>Team JobX</p>
-                    </div>
-                `
-                : `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                    </div>`
+                : `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
                         <h2 style="color: #dc2626;">Application Update</h2>
                         <p>Dear <strong>${applicantName}</strong>,</p>
-                        <p>Thank you for applying for <strong>${jobTitle}</strong> at <strong>${companyName}</strong>.</p>
+                        <p>Your application for <strong>${jobTitle}</strong> at <strong>${companyName}</strong>:</p>
                         <p style="font-size: 20px; font-weight: bold; color: #dc2626; text-align: center; padding: 10px; background: #fef2f2; border-radius: 6px;">NOT SELECTED</p>
-                        <p>After careful consideration, we regret to inform you that your application has not been selected at this time.</p>
                         <p>Don't be discouraged — keep applying on <strong>JobX</strong>!</p>
                         <br/>
                         <p style="color: #6b7280; font-size: 14px;">Best regards,<br/>Team JobX</p>
-                    </div>
-                `;
+                    </div>`;
 
-            // ✅ no stray + sign
             await sendEmail({ to: applicantEmail, subject, html });
         }
 
         console.log("2. updateStatus completed");
-        return res.status(200).json({
-            message: "Status updated successfully.",
-            success: true
-        });
+        return res.status(200).json({ message: "Status updated successfully.", success: true });
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Server error" });
     }
 }
+
 
 // Get application status for a specific job
 export const getApplicationStatus = async (req, res) => {

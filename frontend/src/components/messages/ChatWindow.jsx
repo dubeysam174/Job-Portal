@@ -78,7 +78,7 @@ export default function ChatWindow() {
 
     try {
       const res = await axios.post(
-        "https://jobx-ohzk.onrender.com/api/v1/message/send",
+        "/api/v1/message/send",
         {
           conversationId: currentConversation._id,
           receiverId: other._id,

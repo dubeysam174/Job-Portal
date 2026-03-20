@@ -14,35 +14,50 @@ export default function ConversationList() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { conversations, currentConversation, unreadCounts } = useSelector((state) => state.message);
-  const { onlineUsers } = useSocket();
+  const { onlineUsers, socket } = useSocket(); // ← add socket here
 
   useEffect(() => {
     dispatch(setConversations([]));
 
-    axios.get("https://jobx-ohzk.onrender.com/api/v1/conversation", {
+    axios.get("/api/v1/conversation", {
       withCredentials: true
     }).then((res) => {
-    
       if (res.data.success) {
         dispatch(setConversations(res.data.conversations));
       }
-    }).catch((err) => {
-      
-    });
+    }).catch((err) => {});
   }, [user?._id]);
+
+  // ✅ Refresh conversations when new message arrives
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("new_message", (msg) => {
+      axios.get("/api/v1/conversation", { withCredentials: true })
+        .then((res) => {
+          if (res.data.success) {
+            dispatch(setConversations(res.data.conversations));
+          }
+        });
+    });
+
+    return () => {
+      socket.off("new_message");
+    };
+  }, [socket]);
 
   const openConversation = async (conversation) => {
     dispatch(setCurrentConversation(conversation));
     dispatch(clearUnread(conversation._id));
 
     const res = await axios.get(
-      `https://jobx-ohzk.onrender.com/api/v1/message/${conversation._id}`,
+      `/api/v1/message/${conversation._id}`,
       { withCredentials: true }
     );
     if (res.data.success) dispatch(setMessages(res.data.messages));
 
     await axios.put(
-      `https://jobx-ohzk.onrender.com/api/v1/message/seen/${conversation._id}`,
+      `/api/v1/message/seen/${conversation._id}`,
       {},
       { withCredentials: true }
     );
@@ -78,7 +93,6 @@ export default function ConversationList() {
             className={`flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 hover:dark:bg-gray-500
               ${isActive ? "bg-blue-50 dark:bg-gray-600 hover:dark:bg-gray-600 border-l-4 border-blue-500" : ""}`}
           >
-            
             <div className="relative">
               <img
                 src={other?.profile?.profilePhoto || "/default-avatar.png"}
