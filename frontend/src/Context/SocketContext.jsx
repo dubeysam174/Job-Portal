@@ -22,7 +22,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const s = io("http://localhost:8000", {
+    const s = io("https://jobx-6vou.onrender.com", {
   auth: { userId: user._id },   // ← use auth instead of query
   withCredentials: true,
   transports: ["websocket"]

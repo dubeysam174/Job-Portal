@@ -2,7 +2,7 @@ import React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
-import { LogOut, User2, MessageSquare } from "lucide-react";
+import { LogOut, User2, MessageSquare,Building } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -72,6 +72,7 @@ const Navbar = () => {
                     transition duration-200 hover:scale-110 hover:bg-purple-100
                     dark:hover:bg-purple-900 hover:shadow-md"
                   >
+                    <Building className="h-5 w-5" />
                     Companies
                   </Link>
                 </li>

@@ -12,17 +12,28 @@ import applicationRoute from "./routes/application.route.js";
 import messageRoute from "./routes/message.route.js";
 import conversationRoute from "./routes/conversation.route.js";
 import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config({});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const app = express();
 const httpServer = createServer(app);
 const _dirname = path.resolve();
 const onlineUsers = new Map();
 
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://jobx-6vou.onrender.com"
+];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: allowedOrigins,
     credentials: true
   }
 });
@@ -74,8 +85,10 @@ io.on("connection", (socket) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// ✅ FIX 3: Frontend origins (not localhost:8000)
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174,https://jobx-6vou.onrender.com"],
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -100,3 +113,4 @@ httpServer.listen(PORT, () => {
 });
 
 export { io, onlineUsers };
+    
