@@ -19,7 +19,7 @@ const CategoryCarousel = () => {
              
   return (
     <div>
-      <Carousel className='w-full max-w-xl mx-auto my-20'
+      <Carousel className='w-full max-w-xl mx-auto my-20 gap-1.5'
                  plugins={[
           Autoplay({
             delay: 2000, // ⏱ 2 sec
