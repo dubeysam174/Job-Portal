@@ -226,7 +226,7 @@ const PostJob = () => {
 
             {/* Job Type */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
+              <label className="font-medium bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20">
                 Job Type
               </label>
               <select
@@ -240,10 +240,10 @@ const PostJob = () => {
                 <option value="" className="bg-gray-800 text-white">
                   Select Job Type
                 </option>
-                <option className="bg-gray-800 text-white">Full Time</option>
-                <option className="bg-gray-800 text-white">Part Time</option>
-                <option className="bg-gray-800 text-white">Internship</option>
-                <option className="bg-gray-800 text-white">Remote</option>
+                <option className=" dark:bg-white/10 text-white">Full Time</option>
+                <option className=" dark:bg-white/10 text-white">Part Time</option>
+                <option className=" dark:bg-white/10 text-white">Internship</option>
+                <option className=" dark:bg-white/10 text-white">Remote</option>
               </select>
             </div>
 
