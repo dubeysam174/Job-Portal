@@ -234,14 +234,14 @@ const PostJob = () => {
 
     bg-white text-gray-800 border-gray-300
 
-    dark:bg-gray-800 
+    dark:bg-white/10
     dark:text-white 
     dark:border-gray-600
   "
             >
               <option
                 value=""
-                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+                className="bg-white text-gray-800 dark:bg-white/10 dark:text-white"
               >
                 Select Job Type
               </option>
