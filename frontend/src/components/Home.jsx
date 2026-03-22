@@ -99,7 +99,7 @@ const floatAnimation = (delay = 0) => ({
                 </li>
               </ul>
 
-              <button className="mt-6 w-full bg-black backdrop-blur-md text-white py-2 rounded-md hover:bg-black transition  cursor-pointer">
+              <button  onClick={() => handleNavigation("/browse")}className="mt-6 w-full bg-black backdrop-blur-md text-white py-2 rounded-md hover:bg-black transition  cursor-pointer">
                 Explore Jobs
               </button>
             </motion.div>
