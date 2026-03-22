@@ -225,27 +225,51 @@ const PostJob = () => {
             </div>
 
             {/* Job Type */}
-            <div className="flex flex-col gap-1">
-              <label className="font-medium bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20">
-                Job Type
-              </label>
-              <select
-                name="jobType"
-                value={input.jobType}
-                onChange={changeHandler}
-                className="p-2 rounded-md border 
-             bg-white text-gray-800 border-gray-300 
-            dark:bg-white/10 dark:text-white dark:border-white/20"
+            <select
+              name="jobType"
+              value={input.jobType}
+              onChange={changeHandler}
+              className="
+    p-2 rounded-md border outline-none
+
+    bg-white text-gray-800 border-gray-300
+
+    dark:bg-gray-800 
+    dark:text-white 
+    dark:border-gray-600
+  "
+            >
+              <option
+                value=""
+                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
               >
-                <option value="" className="bg-gray-800 text-white">
-                  Select Job Type
-                </option>
-                <option className=" dark:bg-white/10 dark:text-white bg-white text-gray-700">Full Time</option>
-                <option className=" dark:bg-white/10 text-white">Part Time</option>
-                <option className=" dark:bg-white/10 text-white">Internship</option>
-                <option className=" dark:bg-white/10 text-white">Remote</option>
-              </select>
-            </div>
+                Select Job Type
+              </option>
+              <option
+                value="Full Time"
+                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+              >
+                Full Time
+              </option>
+              <option
+                value="Part Time"
+                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+              >
+                Part Time
+              </option>
+              <option
+                value="Internship"
+                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+              >
+                Internship
+              </option>
+              <option
+                value="Remote"
+                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
+              >
+                Remote
+              </option>
+            </select>
 
             {/* Requirements */}
             <div className="flex flex-col gap-1">
