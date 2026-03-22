@@ -235,12 +235,12 @@ const PostJob = () => {
                 onChange={changeHandler}
                 className="p-2 rounded-md border 
              bg-white text-gray-800 border-gray-300 
-             dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            dark:bg-white/10 dark:text-white dark:border-white/20"
               >
                 <option value="" className="bg-gray-800 text-white">
                   Select Job Type
                 </option>
-                <option className=" dark:bg-white/10 text-white">Full Time</option>
+                <option className=" dark:bg-white/10 dark:text-white bg-white text-gray-700">Full Time</option>
                 <option className=" dark:bg-white/10 text-white">Part Time</option>
                 <option className=" dark:bg-white/10 text-white">Internship</option>
                 <option className=" dark:bg-white/10 text-white">Remote</option>
