@@ -15,10 +15,10 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Sparkles } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { JOB_API_END_POINT } from "@/utils/constant";
-import { GoogleGenerativeAI } from "@google/generative-ai"; 
+import { GoogleGenAI } from "@google/genai";
 
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 const PostJob = () => {
   const [input, setInput] = useState({
@@ -51,27 +51,38 @@ const PostJob = () => {
     }
     try {
       setAiLoading(true);
-     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-      const prompt = `Write a professional job description for a "${input.title}" position.
-      ${input.requirements ? `Required skills: ${input.requirements}.` : ""}
-      ${input.experienceLevel ? `Experience required: ${input.experienceLevel}.` : ""}
-      ${input.jobType ? `Job type: ${input.jobType}.` : ""}
-      
-      Include:
-      - Brief overview of the role (2-3 sentences)
-      - Key responsibilities (4-5 points)
-      - What we offer (2-3 points)
-      
-      Keep it professional, engaging and under 200 words. No markdown, plain text only.`;
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: `Write a professional job description for a "${input.title}" position.
+        ${input.requirements ? `Required skills: ${input.requirements}.` : ""}
+        ${input.experienceLevel ? `Experience required: ${input.experienceLevel}.` : ""}
+        ${input.jobType ? `Job type: ${input.jobType}.` : ""}
+        ${input.location ? `Location: ${input.location}.` : ""}
+        ${input.salary ? `Salary: ${input.salary} LPA.` : ""}
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      setInput((prev) => ({ ...prev, description: text }));
+        Write the description in this format:
+        
+        Overview:
+        (2-3 sentences about the role)
+
+        Key Responsibilities:
+        (4-5 responsibilities)
+
+        Requirements:
+        (3-4 requirements based on the skills provided)
+
+        What We Offer:
+        (2-3 benefits)
+
+        Keep it professional, engaging, and under 250 words. No markdown symbols like ** or ##. Plain text only.`
+      });
+
+      setInput((prev) => ({ ...prev, description: response.text }));
       toast.success("Description generated successfully! ✨");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to generate. Check your API key.");
+      toast.error("Failed to generate. Try again in a moment!");
     } finally {
       setAiLoading(false);
     }
