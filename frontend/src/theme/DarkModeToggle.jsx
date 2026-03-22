@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Contrast } from "lucide-react";
 
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useState(
@@ -20,7 +21,7 @@ const DarkModeToggle = () => {
       onClick={() => setDarkMode(!darkMode)}
       className=" rounded-lg cursor-pointer  "
     >
-      {darkMode ? "☀️ " : "🌙 "}
+     <Contrast/>
     </button>
   );
 };
