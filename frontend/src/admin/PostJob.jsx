@@ -12,12 +12,12 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Sparkles } from "lucide-react"; // ← add Sparkles
+import { Loader2, Sparkles } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { JOB_API_END_POINT } from "@/utils/constant";
-import { GoogleGenerativeAI } from "@google/generative-ai"; // ← add this
+import { GoogleGenerativeAI } from "@google/generative-ai"; 
 
-// ✅ Gemini setup
+
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 const PostJob = () => {
@@ -43,7 +43,7 @@ const PostJob = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  // ✅ Generate description with Gemini
+
   const generateDescription = async () => {
     if (!input.title) {
       toast.error("Please enter a Job Title first!");
@@ -120,7 +120,7 @@ const PostJob = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {/* Job Title */}
+          
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Job Title</label>
               <input
@@ -134,7 +134,7 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Company */}
+            
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Company</label>
               {companies.length > 0 && (
@@ -157,7 +157,7 @@ const PostJob = () => {
               )}
             </div>
 
-            {/* Location */}
+         
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Location</label>
               <input
@@ -170,7 +170,7 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Salary */}
+            
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Salary</label>
               <input
@@ -183,7 +183,7 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Experience */}
+          
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Experience</label>
               <input
@@ -196,7 +196,7 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Position */}
+          
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Number of Positions</label>
               <input
@@ -209,7 +209,7 @@ const PostJob = () => {
               />
             </div>
 
-            {/* Job Type */}
+           
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Job Type</label>
               <select
@@ -227,7 +227,7 @@ const PostJob = () => {
               </select>
             </div>
 
-            {/* Requirements */}
+           
             <div className="flex flex-col gap-1">
               <label className="font-medium text-gray-700 dark:text-gray-200">Requirements</label>
               <input
@@ -241,13 +241,13 @@ const PostJob = () => {
             </div>
           </div>
 
-          {/* ✅ Description with Generate AI button */}
+         
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <label className="font-medium text-gray-700 dark:text-gray-200">
                 Job Description
               </label>
-              {/* ✅ AI Generate Button */}
+            
               <button
                 type="button"
                 onClick={generateDescription}
@@ -275,7 +275,7 @@ const PostJob = () => {
               value={input.description}
               onChange={changeHandler}
               rows="6"
-              placeholder="Write job description or click Generate with AI ✨"
+              placeholder="Write job description or click Generate with AI "
               className="p-2 rounded-md border bg-white text-gray-800 border-gray-300
                 dark:bg-white/10 dark:text-white dark:border-white/20 resize-none"
             />
