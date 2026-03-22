@@ -71,16 +71,15 @@ const PostJob = () => {
     setInput({ ...input, companyId: selectedCompany._id });
   };
 
- return (
-  <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-    <Navbar />
+  return (
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <Navbar />
 
-    <div className="flex justify-center items-center py-10 px-4">
-      
-      {/* 🔹 Glass Card */}
-      <form
-        onSubmit={submitHandler}
-        className="
+      <div className="flex justify-center items-center py-10 px-4">
+        {/* 🔹 Glass Card */}
+        <form
+          onSubmit={submitHandler}
+          className="
           w-full max-w-5xl p-10 space-y-6 rounded-2xl border shadow-lg
           
           bg-white border-gray-200
@@ -89,25 +88,24 @@ const PostJob = () => {
           dark:backdrop-blur-xl 
           dark:border-white/20
         "
-      >
-        <h2 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
-          Post Job
-        </h2>
+        >
+          <h2 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
+            Post Job
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          {/* Job Title */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Job Title
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={input.title}
-              onChange={changeHandler}
-              placeholder="Frontend Developer"
-              className="
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Job Title */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Job Title
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={input.title}
+                onChange={changeHandler}
+                placeholder="Frontend Developer"
+                className="
                 p-2 rounded-md border
                 
                 bg-white text-gray-800 border-gray-300
@@ -117,19 +115,19 @@ const PostJob = () => {
                 dark:border-white/20 
                 dark:placeholder:text-gray-400
               "
-            />
-          </div>
+              />
+            </div>
 
-          {/* Company */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Company
-            </label>
+            {/* Company */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Company
+              </label>
 
-            {companies.length > 0 && (
-              <Select onValueChange={selectChangeHandler}>
-                <SelectTrigger
-                  className="
+              {companies.length > 0 && (
+                <Select onValueChange={selectChangeHandler}>
+                  <SelectTrigger
+                    className="
                     w-full 
                     bg-white border-gray-300 text-gray-800
                     
@@ -137,155 +135,159 @@ const PostJob = () => {
                     dark:border-white/20 
                     dark:text-white
                   "
-                >
-                  <SelectValue placeholder="Select Company" />
-                </SelectTrigger>
+                  >
+                    <SelectValue placeholder="Select Company" />
+                  </SelectTrigger>
 
-                <SelectContent
-                  className="
+                  <SelectContent
+                    className="
                     bg-white border-gray-200
                     
                     dark:bg-gray-800/90 
                     dark:backdrop-blur-md 
                     dark:border-white/10
                   "
-                >
-                  <SelectGroup>
-                    {companies.map((company) => (
-                      <SelectItem
-                        key={company._id}
-                        value={company?.name?.toLowerCase()}
-                        className="dark:text-white"
-                      >
-                        {company.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
+                  >
+                    <SelectGroup>
+                      {companies.map((company) => (
+                        <SelectItem
+                          key={company._id}
+                          value={company?.name?.toLowerCase()}
+                          className="dark:text-white"
+                        >
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={input.location}
+                onChange={changeHandler}
+                placeholder="Chandigarh"
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              />
+            </div>
+
+            {/* Salary */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Salary
+              </label>
+              <input
+                type="text"
+                name="salary"
+                value={input.salary}
+                onChange={changeHandler}
+                placeholder="10 LPA"
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              />
+            </div>
+
+            {/* Experience */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Experience
+              </label>
+              <input
+                type="text"
+                name="experienceLevel"
+                value={input.experienceLevel}
+                onChange={changeHandler}
+                placeholder="2 Years"
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              />
+            </div>
+
+            {/* Position */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Number of Positions
+              </label>
+              <input
+                type="number"
+                name="position"
+                value={input.position}
+                onChange={changeHandler}
+                placeholder="3"
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              />
+            </div>
+
+            {/* Job Type */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Job Type
+              </label>
+              <select
+                name="jobType"
+                value={input.jobType}
+                onChange={changeHandler}
+                className="p-2 rounded-md border 
+             bg-white text-gray-800 border-gray-300 
+             dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              >
+                <option value="" className="bg-gray-800 text-white">
+                  Select Job Type
+                </option>
+                <option className="bg-gray-800 text-white">Full Time</option>
+                <option className="bg-gray-800 text-white">Part Time</option>
+                <option className="bg-gray-800 text-white">Internship</option>
+                <option className="bg-gray-800 text-white">Remote</option>
+              </select>
+            </div>
+
+            {/* Requirements */}
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Requirements
+              </label>
+              <input
+                type="text"
+                name="requirements"
+                value={input.requirements}
+                onChange={changeHandler}
+                placeholder="React, Node.js"
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              />
+            </div>
           </div>
 
-          {/* Location */}
+          {/* Description */}
           <div className="flex flex-col gap-1">
             <label className="font-medium text-gray-700 dark:text-gray-200">
-              Location
+              Job Description
             </label>
-            <input
-              type="text"
-              name="location"
-              value={input.location}
+            <textarea
+              name="description"
+              value={input.description}
               onChange={changeHandler}
-              placeholder="Chandigarh"
+              rows="4"
+              placeholder="Write job description..."
               className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
             />
           </div>
 
-          {/* Salary */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Salary
-            </label>
-            <input
-              type="text"
-              name="salary"
-              value={input.salary}
-              onChange={changeHandler}
-              placeholder="10 LPA"
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-            />
-          </div>
-
-          {/* Experience */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Experience
-            </label>
-            <input
-              type="text"
-              name="experienceLevel"
-              value={input.experienceLevel}
-              onChange={changeHandler}
-              placeholder="2 Years"
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-            />
-          </div>
-
-          {/* Position */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Number of Positions
-            </label>
-            <input
-              type="number"
-              name="position"
-              value={input.position}
-              onChange={changeHandler}
-              placeholder="3"
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-            />
-          </div>
-
-          {/* Job Type */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Job Type
-            </label>
-            <select
-              name="jobType"
-              value={input.jobType}
-              onChange={changeHandler}
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-            >
-              <option value="">Select Job Type</option>
-              <option>Full Time</option>
-              <option>Part Time</option>
-              <option>Internship</option>
-              <option>Remote</option>
-            </select>
-          </div>
-
-          {/* Requirements */}
-          <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Requirements
-            </label>
-            <input
-              type="text"
-              name="requirements"
-              value={input.requirements}
-              onChange={changeHandler}
-              placeholder="React, Node.js"
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-            />
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="flex flex-col gap-1">
-          <label className="font-medium text-gray-700 dark:text-gray-200">
-            Job Description
-          </label>
-          <textarea
-            name="description"
-            value={input.description}
-            onChange={changeHandler}
-            rows="4"
-            placeholder="Write job description..."
-            className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
-          />
-        </div>
-
-        {/* Button */}
-        {loading ? (
-          <Button className="w-full my-4">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Please wait
-          </Button>
-        ) : (
-          <Button
-            type="submit"
-            className="
+          {/* Button */}
+          {loading ? (
+            <Button className="w-full my-4">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="
               w-full my-4 
               bg-black text-white
               
@@ -293,20 +295,20 @@ const PostJob = () => {
               dark:text-black 
               dark:hover:bg-gray-200
             "
-          >
-            Post New Job
-          </Button>
-        )}
+            >
+              Post New Job
+            </Button>
+          )}
 
-        {companies.length === 0 && (
-          <p className="text-xs text-red-600 dark:text-red-400 font-bold text-center my-3">
-            *Please register a company first, before posting jobs
-          </p>
-        )}
-      </form>
+          {companies.length === 0 && (
+            <p className="text-xs text-red-600 dark:text-red-400 font-bold text-center my-3">
+              *Please register a company first, before posting jobs
+            </p>
+          )}
+        </form>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default PostJob;
