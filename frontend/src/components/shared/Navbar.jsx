@@ -64,7 +64,7 @@ const Navbar = () => {
                     transition duration-200 hover:scale-110 hover:bg-purple-100
                     dark:hover:bg-purple-900 hover:shadow-md"
                   >
-                    <HomeIcon className="h-6 w-6" />
+                    <HomeIcon className="h-6 w-6" /> Home
                   </Link>
                 </li>
                 <li>
