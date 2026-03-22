@@ -10,11 +10,15 @@ import {
 } from "@/components/ui/select";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react"; // ← add Sparkles
 import { Button } from "@/components/ui/button";
 import { JOB_API_END_POINT } from "@/utils/constant";
+import { GoogleGenerativeAI } from "@google/generative-ai"; // ← add this
+
+// ✅ Gemini setup
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 const PostJob = () => {
   const [input, setInput] = useState({
@@ -30,6 +34,7 @@ const PostJob = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false); // ← AI loading
   const navigate = useNavigate();
 
   const { companies } = useSelector((store) => store.company);
@@ -38,26 +43,54 @@ const PostJob = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
+  // ✅ Generate description with Gemini
+  const generateDescription = async () => {
+    if (!input.title) {
+      toast.error("Please enter a Job Title first!");
+      return;
+    }
+    try {
+      setAiLoading(true);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `Write a professional job description for a "${input.title}" position.
+      ${input.requirements ? `Required skills: ${input.requirements}.` : ""}
+      ${input.experienceLevel ? `Experience required: ${input.experienceLevel}.` : ""}
+      ${input.jobType ? `Job type: ${input.jobType}.` : ""}
+      
+      Include:
+      - Brief overview of the role (2-3 sentences)
+      - Key responsibilities (4-5 points)
+      - What we offer (2-3 points)
+      
+      Keep it professional, engaging and under 200 words. No markdown, plain text only.`;
+
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      setInput((prev) => ({ ...prev, description: text }));
+      toast.success("Description generated successfully! ✨");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to generate. Check your API key.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
-
     try {
       setLoading(true);
-
       const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
-
       if (res?.data?.success) {
         toast.success(res.data.message);
         navigate("/admin/jobs");
       }
     } catch (error) {
       console.log(error);
-
       toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -74,87 +107,47 @@ const PostJob = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <Navbar />
-
       <div className="flex justify-center items-center py-10 px-4">
-        {/* 🔹 Glass Card */}
         <form
           onSubmit={submitHandler}
-          className="
-          w-full max-w-5xl p-10 space-y-6 rounded-2xl border shadow-lg
-          
-          bg-white border-gray-200
-          
-          dark:bg-white/10 
-          dark:backdrop-blur-xl 
-          dark:border-white/20
-        "
+          className="w-full max-w-5xl p-10 space-y-6 rounded-2xl border shadow-lg
+            bg-white border-gray-200
+            dark:bg-white/10 dark:backdrop-blur-xl dark:border-white/20"
         >
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
             Post Job
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             {/* Job Title */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Job Title
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Job Title</label>
               <input
                 type="text"
                 name="title"
                 value={input.title}
                 onChange={changeHandler}
                 placeholder="Frontend Developer"
-                className="
-                p-2 rounded-md border
-                
-                bg-white text-gray-800 border-gray-300
-                
-                dark:bg-white/10 
-                dark:text-white 
-                dark:border-white/20 
-                dark:placeholder:text-gray-400
-              "
+                className="p-2 rounded-md border bg-white text-gray-800 border-gray-300
+                  dark:bg-white/10 dark:text-white dark:border-white/20 dark:placeholder:text-gray-400"
               />
             </div>
 
             {/* Company */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Company
-              </label>
-
+              <label className="font-medium text-gray-700 dark:text-gray-200">Company</label>
               {companies.length > 0 && (
                 <Select onValueChange={selectChangeHandler}>
-                  <SelectTrigger
-                    className="
-                    w-full 
-                    bg-white border-gray-300 text-gray-800
-                    
-                    dark:bg-white/10 
-                    dark:border-white/20 
-                    dark:text-white
-                  "
-                  >
+                  <SelectTrigger className="w-full bg-white border-gray-300 text-gray-800
+                    dark:bg-white/10 dark:border-white/20 dark:text-white">
                     <SelectValue placeholder="Select Company" />
                   </SelectTrigger>
-
-                  <SelectContent
-                    className="
-                    bg-white border-gray-200
-                    
-                    dark:bg-gray-800/90 
-                    dark:backdrop-blur-md 
-                    dark:border-white/10
-                  "
-                  >
+                  <SelectContent className="bg-white border-gray-200
+                    dark:bg-gray-800/90 dark:backdrop-blur-md dark:border-white/10">
                     <SelectGroup>
                       {companies.map((company) => (
-                        <SelectItem
-                          key={company._id}
-                          value={company?.name?.toLowerCase()}
-                          className="dark:text-white"
-                        >
+                        <SelectItem key={company._id} value={company?.name?.toLowerCase()} className="dark:text-white">
                           {company.name}
                         </SelectItem>
                       ))}
@@ -166,9 +159,7 @@ const PostJob = () => {
 
             {/* Location */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Location
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Location</label>
               <input
                 type="text"
                 name="location"
@@ -181,9 +172,7 @@ const PostJob = () => {
 
             {/* Salary */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Salary
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Salary</label>
               <input
                 type="text"
                 name="salary"
@@ -196,9 +185,7 @@ const PostJob = () => {
 
             {/* Experience */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Experience
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Experience</label>
               <input
                 type="text"
                 name="experienceLevel"
@@ -211,9 +198,7 @@ const PostJob = () => {
 
             {/* Position */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Number of Positions
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Number of Positions</label>
               <input
                 type="number"
                 name="position"
@@ -225,57 +210,26 @@ const PostJob = () => {
             </div>
 
             {/* Job Type */}
-            <select
-              name="jobType"
-              value={input.jobType}
-              onChange={changeHandler}
-              className="
-    p-2 rounded-md border outline-none
-
-    bg-white text-gray-800 border-gray-300
-
-    dark:bg-white/10
-    dark:text-white 
-    dark:border-gray-600
-  "
-            >
-              <option
-                value=""
-                className="bg-white text-gray-800 dark:bg-white/10 dark:text-white"
+            <div className="flex flex-col gap-1">
+              <label className="font-medium text-gray-700 dark:text-gray-200">Job Type</label>
+              <select
+                name="jobType"
+                value={input.jobType}
+                onChange={changeHandler}
+                className="p-2 rounded-md border outline-none bg-white text-gray-800 border-gray-300
+                  dark:bg-white/10 dark:text-white dark:border-gray-600"
               >
-                Select Job Type
-              </option>
-              <option
-                value="Full Time"
-                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-              >
-                Full Time
-              </option>
-              <option
-                value="Part Time"
-                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-              >
-                Part Time
-              </option>
-              <option
-                value="Internship"
-                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-              >
-                Internship
-              </option>
-              <option
-                value="Remote"
-                className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white"
-              >
-                Remote
-              </option>
-            </select>
+                <option value="" className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">Select Job Type</option>
+                <option value="Full Time" className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">Full Time</option>
+                <option value="Part Time" className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">Part Time</option>
+                <option value="Internship" className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">Internship</option>
+                <option value="Remote" className="bg-white text-gray-800 dark:bg-gray-800 dark:text-white">Remote</option>
+              </select>
+            </div>
 
             {/* Requirements */}
             <div className="flex flex-col gap-1">
-              <label className="font-medium text-gray-700 dark:text-gray-200">
-                Requirements
-              </label>
+              <label className="font-medium text-gray-700 dark:text-gray-200">Requirements</label>
               <input
                 type="text"
                 name="requirements"
@@ -287,22 +241,47 @@ const PostJob = () => {
             </div>
           </div>
 
-          {/* Description */}
+          {/* ✅ Description with Generate AI button */}
           <div className="flex flex-col gap-1">
-            <label className="font-medium text-gray-700 dark:text-gray-200">
-              Job Description
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="font-medium text-gray-700 dark:text-gray-200">
+                Job Description
+              </label>
+              {/* ✅ AI Generate Button */}
+              <button
+                type="button"
+                onClick={generateDescription}
+                disabled={aiLoading}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium
+                  bg-purple-600 hover:bg-purple-700 text-white
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  transition duration-200"
+              >
+                {aiLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4" />
+                    Generate with AI
+                  </>
+                )}
+              </button>
+            </div>
             <textarea
               name="description"
               value={input.description}
               onChange={changeHandler}
-              rows="4"
-              placeholder="Write job description..."
-              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300 dark:bg-white/10 dark:text-white dark:border-white/20"
+              rows="6"
+              placeholder="Write job description or click Generate with AI ✨"
+              className="p-2 rounded-md border bg-white text-gray-800 border-gray-300
+                dark:bg-white/10 dark:text-white dark:border-white/20 resize-none"
             />
           </div>
 
-          {/* Button */}
+          {/* Submit Button */}
           {loading ? (
             <Button className="w-full my-4">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -311,14 +290,8 @@ const PostJob = () => {
           ) : (
             <Button
               type="submit"
-              className="
-              w-full my-4 
-              bg-black text-white
-              
-              dark:bg-white 
-              dark:text-black 
-              dark:hover:bg-gray-200
-            "
+              className="w-full my-4 bg-black text-white
+                dark:bg-white dark:text-black dark:hover:bg-gray-200"
             >
               Post New Job
             </Button>
