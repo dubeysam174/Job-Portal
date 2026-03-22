@@ -15,17 +15,22 @@ const Jobs = () => {
       const filteredJobs = allJobs.filter((job) => {
         const query = searchedQuery.toLowerCase();
 
-        if (
+        if (searchedQuery === "0-5 LPA") return job.salary >= 0 && job.salary <= 5;
+        if (searchedQuery === "5-10 LPA") return job.salary > 5 && job.salary <= 10;
+        if (searchedQuery === "10-20 LPA") return job.salary > 10 && job.salary <= 20;
+        if (searchedQuery === "20+ LPA") return job.salary > 20;
+
+        if (searchedQuery === "Fresher") return job.experienceLevel === 0 || job.experienceLevel === "0";
+        if (searchedQuery === "1-2 Years") return job.experienceLevel >= 1 && job.experienceLevel <= 2;
+        if (searchedQuery === "3-5 Years") return job.experienceLevel >= 3 && job.experienceLevel <= 5;
+        if (searchedQuery === "5+ Years") return job.experienceLevel > 5;
+
+        return (
           job.title.toLowerCase().includes(query) ||
           job.description.toLowerCase().includes(query) ||
-          job.location.toLowerCase().includes(query)
-        ) return true;
-
-        if (searchedQuery === "0-40K") return job.salary >= 0 && job.salary <= 40000;
-        if (searchedQuery === "40K-1 LPA") return job.salary > 40000 && job.salary <= 100000;
-        if (searchedQuery === "1 LPA - 5 LPA") return job.salary > 100000 && job.salary <= 500000;
-
-        return false;
+          job.location.toLowerCase().includes(query) ||
+          job.jobType?.toLowerCase().includes(query)
+        );
       });
       setFilterJobs(filteredJobs);
     } else {
@@ -41,7 +46,6 @@ const Jobs = () => {
     });
   };
 
-  // Saved jobs float to top, rest keep original order
   const sortedJobs = useMemo(() => {
     return [...filterJobs].sort((a, b) => {
       const aSaved = savedJobIds.has(a._id) ? 0 : 1;
@@ -51,23 +55,29 @@ const Jobs = () => {
   }, [filterJobs, savedJobIds]);
 
   return (
-    <div className="dark:bg-gray-900">
+    <div className="dark:bg-gray-900 min-h-screen">
       <Navbar />
-      <div className="max-w-7xl mx-auto mt-5">
+      <div className="max-w-7xl mx-auto mt-5 px-4">
         <div className="flex gap-5">
-          <div className="w-20%">
+          <div className="w-72 flex-shrink-0">
             <FilterCard />
           </div>
 
           {sortedJobs.length <= 0 ? (
-            <span>Job not Found</span>
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-3 mt-20">
+              <p className="text-lg font-medium">No jobs found</p>
+              <p className="text-sm">Try different filters</p>
+            </div>
           ) : (
             <div className="flex-1 h-[88vh] overflow-y-auto no-scrollbar pb-5">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                Showing <span className="font-semibold text-purple-600">{sortedJobs.length}</span> jobs
+              </p>
               <div className="grid grid-cols-3 gap-6">
                 <AnimatePresence>
                   {sortedJobs.map((job) => (
                     <motion.div
-                      layout                          // ← animates reorder smoothly
+                      layout
                       initial={{ opacity: 0, x: 100 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -100 }}
